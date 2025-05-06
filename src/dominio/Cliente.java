@@ -1,5 +1,7 @@
 package dominio;
 
+import java.util.Objects;
+
 public class Cliente implements Comparable<Cliente>{
     private String cedula;
     private String Nombre;
@@ -32,6 +34,13 @@ public class Cliente implements Comparable<Cliente>{
     @Override
     public int compareTo(Cliente o) {
         return this.cedula.compareToIgnoreCase(o.cedula);
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        Cliente other = (Cliente) obj;
+        return Objects.equals(this.cedula, other.cedula);
     }
     
 }

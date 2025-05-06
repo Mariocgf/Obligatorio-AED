@@ -26,11 +26,11 @@ public class Sistema implements IObligatorio {
         int pos = listaSala.obtenerPos(sala);
         if (pos != -1) {
             return Retorno.error1();
-        } else if (capacidad == 0) {
+        } else if (capacidad <= 0) {
             return Retorno.error2();
         } else {
             listaSala.agregarInicio(sala);
-            return Retorno.noImplementada();
+            return Retorno.ok();
         }
     }
 
@@ -85,7 +85,7 @@ public class Sistema implements IObligatorio {
             return Retorno.error1();
         }
         Cliente cliente = new Cliente(cedula, nombre);
-        if (listaCliente.obtenerPos(cliente) != -1) {
+        if (listaCliente.obtenerPos(cliente) == -1) {
             listaCliente.agregarOrdenado(cliente);
             return Retorno.ok();
         }
@@ -121,20 +121,20 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno listarEventos() {
         listaEvento.mostrar();
-        return Retorno.noImplementada();
+        return Retorno.ok();
     }
 
     @Override
     public Retorno listarClientes() {
         listaCliente.mostrar();
-        return Retorno.noImplementada();
+        return Retorno.ok();
     }
 
     @Override
     public Retorno esSalaOptima(String[][] vistaSala) {
         int contCol = 0; //cantidad de columnas juntas
         boolean corte = false;
-        String msg = "No es optimo.";
+        String msg = "No es optimo";
         for (int j = 0; j < vistaSala[0].length && !corte; j++) {
             int asientosOcupadosConsecutivos = 0;
             int asientosLibres = 0;
@@ -157,7 +157,7 @@ public class Sistema implements IObligatorio {
             }
             if (contCol == 2) {
                 corte = true;
-                msg = "Es optimo.";
+                msg = "Es optimo";
             }
         }
         return Retorno.ok(msg);
@@ -205,8 +205,8 @@ public class Sistema implements IObligatorio {
         return listaEvento;
     }
 
-    public void setListaEvento(Lista<Evento> listaEvento) {
-        this.listaEvento = listaEvento;
+    public Lista<Cliente> getListaCliente() {
+        return this.listaCliente;
     }
 
 }

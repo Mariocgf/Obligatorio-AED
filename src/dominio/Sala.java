@@ -4,7 +4,8 @@ import java.util.Objects;
 import tads.Lista;
 
 public class Sala implements Comparable<Sala>{
-
+    private int id;
+    private static int ultimoId = 0;
     private String nombre;
     private int Capacidad;
     private Lista<Evento> listaEventos;
@@ -13,12 +14,21 @@ public class Sala implements Comparable<Sala>{
         this.nombre = Nombre;
         this.Capacidad = Capacidad;
         this.listaEventos = new Lista<>();
+        this.id = this.ultimoId++;
     }
     public Sala(String nombre){
         this.nombre = nombre;
     }
     public Lista<Evento> getListaEventos() {
         return listaEventos;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setListaEventos(Lista listaEventos) {

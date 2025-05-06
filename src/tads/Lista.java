@@ -196,6 +196,7 @@ public class Lista<T extends Comparable> implements ILista<T> {
             }
         }
     }
+    @Override
     public void agregarOrdenado(T x){
         Nodo<T> aux2 = initial;
         int pos = 0;

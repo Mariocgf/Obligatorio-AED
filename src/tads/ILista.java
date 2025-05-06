@@ -26,4 +26,6 @@ public interface ILista<T> {
     public void insertarEnPos(int pos, T dato);
     
     public void eliminarEnPos(int pos);
+    
+    public void agregarOrdenado(T x);
 }

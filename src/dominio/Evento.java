@@ -2,6 +2,7 @@ package dominio;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import tads.Lista;
 
 public class Evento implements Comparable<Evento> {
     private String codigo;
@@ -9,6 +10,7 @@ public class Evento implements Comparable<Evento> {
     private int aforoNecesario;
     private LocalDate fecha;
     private Sala sala;
+    private Lista listaEntradas;
 
     public Evento(String codigo, String descripcion, int aforoNecesario, LocalDate fecha, Sala sala) {
         this.codigo = codigo;
@@ -16,6 +18,7 @@ public class Evento implements Comparable<Evento> {
         this.aforoNecesario = aforoNecesario;
         this.fecha = fecha;
         this.sala = sala;
+        this.listaEntradas = new Lista();
     }
     public Evento(String codigo){
         this.codigo = codigo;
@@ -54,8 +57,9 @@ public class Evento implements Comparable<Evento> {
 
     @Override
     public String toString() {
-        return codigo + "-" + descripcion + "-" + sala.getNombre();
+        return codigo + "-" + descripcion + "-" + sala.getId() + "-" + (sala.getCapacidad() - this.listaEntradas.cantidadElementos()) + "-" + this.listaEntradas.cantidadElementos();
     }
+    
     @Override
     public boolean equals(Object o){
         Evento event = (Evento) o;
