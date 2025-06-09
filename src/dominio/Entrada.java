@@ -1,28 +1,67 @@
 package dominio;
 
-public class Entrada {
-    private String cedula;
-    private String codigoEvento;
+import java.util.Objects;
 
-    public Entrada(String cedula, String codigoEvento) {
-        this.cedula = cedula;
-        this.codigoEvento = codigoEvento;
+public class Entrada implements Comparable<Entrada> {
+    private Cliente cliente;
+    private Evento evento;
+    private String estado;
+
+    public Entrada(Cliente cliente, Evento evento) {
+        this.cliente = cliente;
+        this.evento = evento;
+        this.estado = "N";
     }
 
-    public String getCedula() {
-        return cedula;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
-    public String getCodigoEvento() {
-        return codigoEvento;
+    public Evento getEvento() {
+        return evento;
     }
 
-    public void setCodigoEvento(String codigoEvento) {
-        this.codigoEvento = codigoEvento;
+    public void setEvento(Evento evento) {
+        this.evento = evento;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Entrada other = (Entrada) obj;
+        if (!Objects.equals(this.cliente, other.cliente)) {
+            return false;
+        }
+        return Objects.equals(this.evento, other.evento);
+    }
+
+    
+
+    @Override
+    public int compareTo(Entrada o) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

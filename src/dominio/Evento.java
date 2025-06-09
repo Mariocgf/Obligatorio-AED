@@ -10,7 +10,9 @@ public class Evento implements Comparable<Evento> {
     private int aforoNecesario;
     private LocalDate fecha;
     private Sala sala;
-    private Lista listaEntradas;
+    private Lista<Entrada> listaEntradas;
+    private Lista<Cliente> listaEspera;
+    private Lista<Clasificacion> listaClasificacion;
 
     public Evento(String codigo, String descripcion, int aforoNecesario, LocalDate fecha, Sala sala) {
         this.codigo = codigo;
@@ -25,6 +27,18 @@ public class Evento implements Comparable<Evento> {
     }
     public String getCodigo() {
         return codigo;
+    }
+
+    public Lista<Clasificacion> getListaClasificacion() {
+        return listaClasificacion;
+    }
+
+    public Lista<Cliente> getListaEspera() {
+        return listaEspera;
+    }
+
+    public Lista<Entrada> getListaEntradas() {
+        return listaEntradas;
     }
 
     public void setCodigo(String codigo) {
@@ -70,4 +84,9 @@ public class Evento implements Comparable<Evento> {
     public int compareTo(Evento o) {
         return this.codigo.compareToIgnoreCase(o.codigo);
     }
+
+    public Sala getSala() {
+        return sala;
+    }
+    
 }

@@ -1,14 +1,20 @@
 package dominio;
 
 import java.util.Objects;
+import tads.Lista;
 
 public class Cliente implements Comparable<Cliente>{
     private String cedula;
     private String Nombre;
+    private Lista<Entrada> listaEntrada;
 
     public Cliente(String cedula, String Nombre) {
         this.cedula = cedula;
         this.Nombre = Nombre;
+        this.listaEntrada = new Lista();
+    }
+    public Cliente(String cedula){
+        this.cedula = cedula;
     }
 
     public String getCedula() {
@@ -25,6 +31,10 @@ public class Cliente implements Comparable<Cliente>{
 
     public void setNombre(String Nombre) {
         this.Nombre = Nombre;
+    }
+
+    public Lista<Entrada> getListaEntrada() {
+        return listaEntrada;
     }
 
     @Override

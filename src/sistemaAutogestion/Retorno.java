@@ -34,21 +34,40 @@ public class Retorno {
     public static Retorno error1() {
         return new Retorno(Resultado.ERROR_1);
     }
+    public static Retorno error1(String valorString) {
+        return new Retorno(Resultado.ERROR_1, valorString);
+    }
 
     public static Retorno error2() {
         return new Retorno(Resultado.ERROR_2);
+    }
+    
+    public static Retorno error2(String valorString) {
+        return new Retorno(Resultado.ERROR_2, valorString);
     }
 
     public static Retorno error3() {
         return new Retorno(Resultado.ERROR_3);
     }
+    
+    public static Retorno error3(String valorString) {
+        return new Retorno(Resultado.ERROR_3, valorString);
+    }
 
     public static Retorno error4() {
         return new Retorno(Resultado.ERROR_4);
     }
+    
+    public static Retorno error4(String valorString) {
+        return new Retorno(Resultado.ERROR_4, valorString);
+    }
 
     public static Retorno error5() {
         return new Retorno(Resultado.ERROR_5);
+    }
+    
+    public static Retorno error5(String valorString) {
+        return new Retorno(Resultado.ERROR_5, valorString);
     }
 
 }

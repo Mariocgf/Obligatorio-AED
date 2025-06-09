@@ -48,10 +48,12 @@ public class prueba {
         sistem.registrarSala("S7", -10);
         //2.1
         System.out.println("2.1 - Listado de salas:");
-        sistem.listarSalas();
+        Retorno r = sistem.listarSalas();
+        System.out.println(r.valorString);
         //1.3
         sistem.eliminarSala("S3");
-        sistem.listarSalas();
+        r = sistem.listarSalas();
+        System.out.println(r.valorString);
         System.out.println("");
         //1.4
         sistem.registrarEvento("EC1", "Evento 1", 40, LocalDate.of(2025, Month.MARCH, 1));
@@ -62,7 +64,8 @@ public class prueba {
         sistem.registrarEvento("EA5", "Evento 5 prueba", 0, LocalDate.of(2025, Month.MARCH, 3));
         //2.2
         System.out.println("2.2 - Listado de eventos;");
-        sistem.listarEventos();
+        r = sistem.listarEventos();
+        System.out.println(r.valorString);
         System.out.println("");
         //1.5
         sistem.registrarCliente("44444444", "Cliente 1");
@@ -78,11 +81,10 @@ public class prueba {
         System.out.println("2.4 - Sala optima: " + sistem.esSalaOptima(matriz).valorString);
         System.out.println("2.4 - Sala optima: " + sistem.esSalaOptima(matriz2).valorString);
         
-//        sistem.registrarEvento("E1", "Evento 1", 15, LocalDate.of(2025, 5, 3));
-//        sistem.registrarEvento("E2", "Evento 2", 15, LocalDate.of(2025, 5, 3));
-//        System.out.println("Sala 1: " + sistem.getListaSala().obtenerElemento(0).getListaEventos().cantidadElementos());
-//        System.out.println("Sala 2: " + sistem.getListaSala().obtenerElemento(1).getListaEventos().cantidadElementos());
-//        sistem.getListaSala().obtenerElemento(0).getListaEventos().mostrar();
-//        sistem.getListaSala().obtenerElemento(1).getListaEventos().mostrar();
+        System.out.println("--- Parte segundo obligatorio ---");
+        sistem.comprarEntrada("44444444", "EC1");
+        
+        System.out.println("2.9 - Compras de cliente");
+        System.out.println(sistem.comprasDeCliente("44444444").valorString);
     }
 }

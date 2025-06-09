@@ -1,6 +1,8 @@
 package sistemaAutogestion;
 
+import dominio.Clasificacion;
 import dominio.Cliente;
+import dominio.Entrada;
 import dominio.Evento;
 import dominio.Sala;
 import java.time.LocalDate;
@@ -38,7 +40,7 @@ public class Sistema implements IObligatorio {
     public Retorno eliminarSala(String nombre) {
         int pos = listaSala.obtenerPos(new Sala(nombre));
         if (pos == -1) {
-            return Retorno.error1();
+            return Retorno.error1("No existe una sala con ese nombre");
         } else {
             listaSala.eliminarEnPos(pos);
         }
@@ -94,47 +96,133 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno comprarEntrada(String cedula, String codigoEvento) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+
+        if (!listaCliente.existeElemento(new Cliente(cedula))) {
+            retorno = Retorno.error1("Cliente no existe");
+        } else if (!listaEvento.existeElemento(new Evento(codigoEvento))) {
+            retorno = Retorno.error2("Evento no existe");
+        } else {
+            Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
+            Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
+
+            if (evento.getSala().getCapacidad() > evento.getListaEntradas().cantidadElementos()) {
+                Entrada entrada = new Entrada(cliente, evento);
+                evento.getListaEntradas().agregarFinal(entrada);
+                cliente.getListaEntrada().agregarFinal(entrada);
+            } else {
+                evento.getListaEspera().agregarFinal(cliente);
+            }
+        }
+        return retorno;
     }
 
     @Override
     public Retorno eliminarEvento(String codigo) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+
+        if (!listaEvento.existeElemento(new Evento(codigo))) {
+            retorno = Retorno.error1("No existe el evento");
+        } else {
+            int eventoPos = listaEvento.obtenerPos(new Evento(codigo));
+            Evento evento = listaEvento.obtenerElemento(eventoPos);
+
+            if (evento.getListaEntradas().cantidadElementos() > 0) {
+                retorno = Retorno.error2("El evento tiene entradas vendidas");
+            } else {
+                listaEvento.eliminarEnPos(eventoPos);
+            }
+        }
+        return retorno;
     }
 
     @Override
     public Retorno devolverEntrada(String cedula, String codigoEvento) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+        if (!listaCliente.existeElemento(new Cliente(cedula))) {
+            retorno = Retorno.error1("Cliente no existe");
+        } else if (!listaEvento.existeElemento(new Evento(codigoEvento))) {
+            retorno = Retorno.error2("Evento no existe");
+        } else {
+            Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
+            Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
+
+            evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(new Entrada(cliente, evento)));
+            if (evento.getListaEspera().cantidadElementos() > 0) {
+                Cliente clienteEspera = evento.getListaEspera().obtenerElemento(0);
+                evento.getListaEntradas().agregarFinal(new Entrada(clienteEspera, evento));
+                evento.getListaEspera().eliminarInicio();
+            }
+        }
+        return retorno;
     }
 
     @Override
     public Retorno calificarEvento(String cedula, String codigoEvento, int puntaje, String comentario) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+        if (!listaCliente.existeElemento(new Cliente(cedula))) {
+            retorno = Retorno.error1("Cliente no existe");
+        } else if (!listaEvento.existeElemento(new Evento(codigoEvento))) {
+            retorno = Retorno.error2("Evento no existe");
+        } else if (puntaje > 10 || puntaje < 0) {
+            retorno = Retorno.error3("Puntaje < 1 o puntaje > 10");
+        } else {
+            Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
+            Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
+            Clasificacion clasificaion = new Clasificacion(cliente, evento, puntaje, comentario);
+            if (evento.getListaClasificacion().existeElemento(clasificaion)) {
+                retorno = Retorno.error4("El evento ya fue clasificado por el cliente");
+            } else {
+                evento.getListaClasificacion().agregarFinal(clasificaion);
+            }
+        }
+        return retorno;
     }
 
     @Override
     public Retorno listarSalas() {
-        listaSala.mostrar();
-        return Retorno.ok();
+        String salida = "";
+        for (int i = 0; i < listaSala.cantidadElementos(); i++) {
+            if (i != (listaSala.cantidadElementos() - 1)) {
+                salida += listaSala.obtenerElemento(i) + "#";
+            } else {
+                salida += listaSala.obtenerElemento(i);
+            }
+        }
+        return Retorno.ok(salida);
     }
 
     @Override
     public Retorno listarEventos() {
-        listaEvento.mostrar();
-        return Retorno.ok();
+        String salida = "";
+        for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
+            if (i != (listaEvento.cantidadElementos() - 1)) {
+                salida += listaEvento.obtenerElemento(i) + "#";
+            } else {
+                salida += listaEvento.obtenerElemento(i);
+            }
+        }
+        return Retorno.ok(salida);
     }
 
     @Override
     public Retorno listarClientes() {
-        listaCliente.mostrar();
-        return Retorno.ok();
+        String salida = "";
+        for (int i = 0; i < listaCliente.cantidadElementos(); i++) {
+            if (i != (listaCliente.cantidadElementos() - 1)) {
+                salida += listaCliente.obtenerElemento(i) + "#";
+            } else {
+                salida += listaCliente.obtenerElemento(i);
+            }
+        }
+        return Retorno.ok(salida);
     }
 
     @Override
     public Retorno esSalaOptima(String[][] vistaSala) {
         int contCol = 0; //cantidad de columnas juntas
         boolean corte = false;
-        String msg = "No es optimo";
+        String msg = "No es óptimo";
         for (int j = 0; j < vistaSala[0].length && !corte; j++) {
             int asientosOcupadosConsecutivos = 0;
             int asientosLibres = 0;
@@ -157,7 +245,7 @@ public class Sistema implements IObligatorio {
             }
             if (contCol == 2) {
                 corte = true;
-                msg = "Es optimo";
+                msg = "Es óptimo";
             }
         }
         return Retorno.ok(msg);
@@ -165,12 +253,47 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno listarClientesDeEvento(String código, int n) {
-        return Retorno.noImplementada();
+        String salida = "";
+        Retorno retorno = Retorno.ok(salida);
+        if (!listaEvento.existeElemento(new Evento(código))) {
+            retorno = Retorno.error1("Evento no existe");
+        } else if (n < 1) {
+            retorno = Retorno.error2("n < 1");
+        } else {
+            int cant = 0;
+            Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(código)));
+            if (evento.getListaEntradas().cantidadElementos() < n) {
+                cant = evento.getListaEntradas().cantidadElementos();
+            } else {
+                cant = n;
+            }
+            for (int i = 0; i < cant; i++) {
+                if (i != (cant - 1)) {
+                    salida += evento.getListaEntradas().obtenerElemento(i) + "#";
+                } else {
+                    salida += evento.getListaEntradas().obtenerElemento(i);
+                }
+            }
+        }
+        return retorno;
     }
 
+    //Reparar el orden de cliente - ESTO NO ORDENA LOS CLIENTES
     @Override
     public Retorno listarEsperaEvento() {
-        return Retorno.noImplementada();
+        String salida = "";
+        Lista lista = new Lista();
+        for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
+            Evento evento = listaEvento.obtenerElemento(i);
+            if (evento.getListaEspera().cantidadElementos() > 0) {
+                if (i != (listaEvento.cantidadElementos() - 1)) {
+                    salida += evento.getCodigo() + "-" + evento.getListaEspera().obtenerElemento(i).getCedula() + "#";
+                } else {
+                    salida += evento.getCodigo() + "-" + evento.getListaEspera().obtenerElemento(i).getCedula();
+                }
+            }
+        }
+        return Retorno.ok(salida);
     }
 
     @Override
@@ -180,19 +303,62 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno eventoMejorPuntuado() {
-        return Retorno.noImplementada();
+        Lista lista = new Lista();
+        int max = 1;
+        for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
+            Evento evento = listaEvento.obtenerElemento(i);
+            int suma = 0;
+            int cant = evento.getListaClasificacion().cantidadElementos();
+            for (int j = 0; j < cant; j++) {
+                suma += evento.getListaClasificacion().obtenerElemento(j).getPuntaje();
+            }
+            if ((suma / cant) > max) {
+                lista.vaciar();
+                lista.agregarFinal(evento.getCodigo() + "-" + max);
+                max = suma/cant;
+            } else if ((suma / cant) == max) {
+                lista.agregarFinal(evento.getCodigo() + "-" + max);
+            }
+        }
+        return Retorno.ok();
     }
 
     @Override
     public Retorno comprasDeCliente(String cedula) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+        String salida = "";
+        if(!listaCliente.existeElemento(new Cliente(cedula))){
+            retorno = Retorno.error1("Cliente no existe");
+        }else{
+            Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
+            for (int i = 0; i < cliente.getListaEntrada().cantidadElementos(); i++) {
+                System.out.println("Entre");
+                String codEvento = cliente.getListaEntrada().obtenerElemento(i).getEvento().getCodigo();
+                String estadoEntrada = cliente.getListaEntrada().obtenerElemento(i).getEstado();
+                if (i != (listaEvento.cantidadElementos() - 1)) {
+                    salida +=  codEvento+ "-" + estadoEntrada + "#";
+                } else {
+                    salida += codEvento + "-" + estadoEntrada;
+                }
+            }
+        }
+        retorno.valorString = salida;
+        return retorno;
     }
 
     @Override
     public Retorno comprasXDia(int mes) {
-        return Retorno.noImplementada();
+        Retorno retorno = Retorno.ok();
+        String salida = "";
+        if (mes > 12 || mes < 1){
+            retorno = Retorno.error1("Mes < 1 o mes > 12");
+        }else{
+            
+        }
+        return retorno;
     }
 
+    
     public Lista<Sala> getListaSala() {
         return listaSala;
     }
