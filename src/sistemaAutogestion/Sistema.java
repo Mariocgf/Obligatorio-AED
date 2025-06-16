@@ -4,6 +4,7 @@ import dominio.Clasificacion;
 import dominio.Cliente;
 import dominio.Entrada;
 import dominio.Evento;
+import dominio.ReporteCompra;
 import dominio.Sala;
 import java.time.LocalDate;
 import tads.Lista;
@@ -197,41 +198,17 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno listarSalas() {
-        String salida = "";
-        for (int i = 0; i < listaSala.cantidadElementos(); i++) {
-            if (i != (listaSala.cantidadElementos() - 1)) {
-                salida += listaSala.obtenerElemento(i) + "#";
-            } else {
-                salida += listaSala.obtenerElemento(i);
-            }
-        }
-        return Retorno.ok(salida);
+        return Retorno.ok(listaSala.toString());
     }
 
     @Override
     public Retorno listarEventos() {
-        String salida = "";
-        for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
-            if (i != (listaEvento.cantidadElementos() - 1)) {
-                salida += listaEvento.obtenerElemento(i) + "#";
-            } else {
-                salida += listaEvento.obtenerElemento(i);
-            }
-        }
-        return Retorno.ok(salida);
+        return Retorno.ok(listaEvento.toString());
     }
 
     @Override
     public Retorno listarClientes() {
-        String salida = "";
-        for (int i = 0; i < listaCliente.cantidadElementos(); i++) {
-            if (i != (listaCliente.cantidadElementos() - 1)) {
-                salida += listaCliente.obtenerElemento(i) + "#";
-            } else {
-                salida += listaCliente.obtenerElemento(i);
-            }
-        }
-        return Retorno.ok(salida);
+        return Retorno.ok(listaCliente.toString());
     }
 
     @Override
@@ -299,45 +276,35 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno listarEsperaEvento() {
         String salida = "";
-        Lista<Cliente> lista = new Lista();
+        Lista<Entrada> lista = new Lista();
         for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
             Evento evento = listaEvento.obtenerElemento(i);
             if (evento.getListaEspera().cantidadElementos() > 0) {
                 for (int j = 0; j < evento.getListaEspera().cantidadElementos(); j++) {
-                    lista.agregarOrdenado(new Cliente(evento.getListaEspera().obtenerElemento(j).getCedula()));
-                }
-                for (int j = 0; j < lista.cantidadElementos(); j++) {
-                    if (i != (listaEvento.cantidadElementos() - 1)) {
-                        salida += evento.getCodigo() + "-" + lista.obtenerElemento(j).getCedula() + "#";
-                    } else {
-                        salida += evento.getCodigo() + "-" + lista.obtenerElemento(j).getCedula();
-                    }
+                    Cliente cliente = evento.getListaEspera().obtenerElemento(j);
+                    Entrada entrada = new Entrada(cliente, evento);
+                    lista.agregarOrdenado(entrada);
                 }
             }
-            lista.vaciar();
         }
-        return Retorno.ok(salida);
+        return Retorno.ok(lista.toString());
     }
 
     @Override
     public Retorno deshacerUtimasCompras(int n) {
         Retorno retorno = Retorno.ok();
-        String salida = "";
-        Lista<Integer> pos = new Lista();
+        Lista<Entrada> entradas = new Lista();
         int cont = 0;
-        for (int i = listaEntrada.cantidadElementos() - 1; i <= 0 && cont != n; i++) {
+        for (int i = listaEntrada.cantidadElementos() - 1; i >= 0 && cont != n; i--) {
             cont++;
             Evento evento = listaEntrada.obtenerElemento(i).getEvento();
             Cliente cliente = listaEntrada.obtenerElemento(i).getCliente();
-            if (cont < n) {
-                salida += evento.getCodigo() + '-' + cliente.getCedula() + '#';
-            } else {
-                salida += evento.getCodigo() + '-' + cliente.getCedula();
-            }
+            Entrada entrada = new Entrada(cliente, evento);
+            entradas.agregarOrdenado(entrada);
             devolverEntrada(cliente.getCedula(), evento.getCodigo());
             listaEntrada.eliminarEnPos(i);
         }
-        return Retorno.noImplementada();
+        return Retorno.ok(entradas.toString());
     }
 
     @Override
@@ -389,10 +356,25 @@ public class Sistema implements IObligatorio {
     public Retorno comprasXDia(int mes) {
         Retorno retorno = Retorno.ok();
         String salida = "";
+        Lista<ReporteCompra> lista = new Lista(); 
         int cont = 0;
         if (mes > 12 || mes < 1) {
             retorno = Retorno.error1("Mes < 1 o mes > 12");
         } else {
+            for (int i = 0; i < listaEntrada.cantidadElementos(); i++) {
+                Entrada entrada = listaEntrada.obtenerElemento(i);
+                if(entrada.getFecha().getMonthValue() == mes){
+                    ReporteCompra rCompra = new ReporteCompra(entrada.getFecha().getDayOfMonth(),1);
+                    if(lista.existeElemento(rCompra)){
+                        ReporteCompra aux = lista.obtenerElemento(lista.obtenerPos(rCompra));
+                        aux.setCant(aux.getCant()+1);
+                    }else{
+                        lista.agregarOrdenado(rCompra);
+                    }
+                }
+            }
+            
+            
             for (int i = 1; i <= 31; i++) {
                 int cant = 0;
                 for (int j = 0; j < listaEvento.cantidadElementos(); j++) {
@@ -407,13 +389,12 @@ public class Sistema implements IObligatorio {
                     if (cont < listaEvento.cantidadElementos() - 1) {
                         salida += i + "-" + cant + "#";
                     } else {
-                        System.out.println("entre");
                         salida += i + "-" + cant;
                     }
                 }
             }
         }
-        retorno.valorString = salida;
+        retorno.valorString = lista.toString();
         return retorno;
     }
 
@@ -431,6 +412,10 @@ public class Sistema implements IObligatorio {
 
     public Lista<Cliente> getListaCliente() {
         return this.listaCliente;
+    }
+
+    public Lista<Entrada> getListaEntrada() {
+        return listaEntrada;
     }
 
 }

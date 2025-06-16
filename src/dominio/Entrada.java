@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Entrada implements Comparable<Entrada> {
+
     private Cliente cliente;
     private Evento evento;
     private String estado;
@@ -40,6 +41,10 @@ public class Entrada implements Comparable<Entrada> {
         return estado;
     }
 
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -64,11 +69,18 @@ public class Entrada implements Comparable<Entrada> {
         return Objects.equals(this.evento, other.evento);
     }
 
-    
-
     @Override
     public int compareTo(Entrada o) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int comparacion = this.evento.getCodigo().compareToIgnoreCase(o.getEvento().getCodigo());
+        if (comparacion != 0) {
+            return comparacion;
+        }
+        return this.cliente.getCedula().compareToIgnoreCase(o.getCliente().getCedula());
+    }
+
+    @Override
+    public String toString() {
+        return evento.getCodigo() + '-' + cliente.getCedula();
     }
     
 }

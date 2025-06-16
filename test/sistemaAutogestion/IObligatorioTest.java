@@ -339,7 +339,7 @@ public class IObligatorioTest {
         salida = "45678992-Micaela Ferrez";
         assertEquals(salida, retorno.valorString);
     }
-    
+
     @Test
     public void testDevolverEntradaError1() {
         miSistema.registrarSala("Sala 1", 50);
@@ -347,7 +347,7 @@ public class IObligatorioTest {
         Retorno retorno = miSistema.devolverEntrada("35679992", "Evento 1");
         assertEquals(Retorno.error1().resultado, retorno.resultado);
     }
-    
+
     @Test
     public void testDevolverEntradaError2() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
@@ -356,52 +356,52 @@ public class IObligatorioTest {
         retorno = miSistema.devolverEntrada("35679992", "Evento 1");
         assertEquals(Retorno.error2().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testCalificarEventoOk(){
+    public void testCalificarEventoOk() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("Evento 1", "Prueba", 5, LocalDate.of(2025, 5, 10));
         Retorno retorno = miSistema.calificarEvento("35679992", "Evento 1", 9, "Prueba");
         assertEquals(Retorno.ok().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testCalificarEventoError1(){
+    public void testCalificarEventoError1() {
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("Evento 1", "Prueba", 5, LocalDate.of(2025, 5, 10));
         Retorno retorno = miSistema.calificarEvento("35679992", "Evento 1", 9, "Prueba");
         assertEquals(Retorno.error1().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testCalificarEventoError2(){
+    public void testCalificarEventoError2() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarSala("Sala 1", 50);
         Retorno retorno = miSistema.calificarEvento("35679992", "Evento 1", 9, "Prueba");
         assertEquals(Retorno.error2().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testCalificarEventoError3Menor1(){
+    public void testCalificarEventoError3Menor1() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("Evento 1", "Prueba", 5, LocalDate.of(2025, 5, 10));
         Retorno retorno = miSistema.calificarEvento("35679992", "Evento 1", 0, "Prueba");
         assertEquals(Retorno.error3().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testCalificarEventoError3Mayor10(){
+    public void testCalificarEventoError3Mayor10() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("Evento 1", "Prueba", 5, LocalDate.of(2025, 5, 10));
         Retorno retorno = miSistema.calificarEvento("35679992", "Evento 1", 11, "Prueba");
         assertEquals(Retorno.error3().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testListarClientesEventoOk(){
+    public void testListarClientesEventoOk() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarSala("Sala 1", 50);
@@ -412,18 +412,18 @@ public class IObligatorioTest {
         String salida = "35679992-Ramiro Perez#45678992-Micaela Ferrez";
         assertEquals(salida, retorno.valorString);
     }
-    
+
     @Test
-    public void testListarClientesEventoError1(){
+    public void testListarClientesEventoError1() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarSala("Sala 1", 50);
         Retorno retorno = miSistema.listarClientesDeEvento("Evento 1", 5);
         assertEquals(Retorno.error1().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testListarClientesEventoError2(){
+    public void testListarClientesEventoError2() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarSala("Sala 1", 50);
@@ -433,20 +433,20 @@ public class IObligatorioTest {
         Retorno retorno = miSistema.listarClientesDeEvento("Evento 1", 0);
         assertEquals(Retorno.error2().resultado, retorno.resultado);
     }
-    
+
     @Test
-    public void testListarEsperaEvento(){
+    public void testListarEsperaEvento() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarCliente("23331111", "Micaela Gomez");
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("KAK34", "Prueba", 1, LocalDate.of(2025, 5, 10));
         miSistema.registrarEvento("TEC43", "Prueba", 2, LocalDate.of(2025, 6, 10));
-        
+
         miSistema.comprarEntrada("35679992", "KAK34");
         miSistema.comprarEntrada("45678992", "KAK34");
         miSistema.comprarEntrada("23331111", "KAK34");
-        
+
         miSistema.comprarEntrada("23331111", "TEC43");
         miSistema.comprarEntrada("45678992", "TEC43");
         miSistema.comprarEntrada("35679992", "TEC43");
@@ -454,9 +454,9 @@ public class IObligatorioTest {
         String salida = "KAK34-23331111#KAK34-45678992#TEC43-35679992";
         assertEquals(salida, retorno.valorString);
     }
-    
+
     @Test
-    public void testDeshacerUltimasCompras(){
+    public void testDeshacerUltimasCompras() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarCliente("23331111", "Micaela Gomez");
@@ -470,11 +470,12 @@ public class IObligatorioTest {
         miSistema.comprarEntrada("45678992", "COP10");
         miSistema.comprarEntrada("23331111", "TEC43");
         Retorno retorno = miSistema.deshacerUtimasCompras(2);
-        System.out.println(retorno.valorString);
+        String salida = "COP10-45678992#TEC43-23331111";
+        assertEquals(salida, retorno.valorString);
     }
-    
+
     @Test
-    public void testEventoMejorPuntuado(){
+    public void testEventoMejorPuntuado() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarCliente("45678992", "Micaela Ferrez");
         miSistema.registrarCliente("23331111", "Micaela Gomez");
@@ -482,27 +483,27 @@ public class IObligatorioTest {
         miSistema.registrarEvento("KAK34", "Prueba", 1, LocalDate.of(2025, 5, 10));
         miSistema.registrarEvento("TEC43", "Prueba", 2, LocalDate.of(2025, 6, 10));
         miSistema.registrarEvento("TEC45", "Prueba", 2, LocalDate.of(2025, 7, 10));
-        
+
         miSistema.calificarEvento("35679992", "KAK34", 9, "Genial");
         miSistema.calificarEvento("45678992", "KAK34", 10, "Genial");
-        
+
         miSistema.calificarEvento("23331111", "TEC45", 4, "Fatal");
         miSistema.calificarEvento("45678992", "TEC45", 8, "Genial");
-        
+
         Retorno retorno = miSistema.eventoMejorPuntuado();
         String salida = "KAK34-9";
         assertEquals(salida, retorno.valorString);
-        
+
         miSistema.calificarEvento("23331111", "TEC43", 8, "Genial");
         miSistema.calificarEvento("35679992", "TEC43", 10, "Genial");
-        
+
         retorno = miSistema.eventoMejorPuntuado();
         salida = "KAK34-9#TEC43-9";
         assertEquals(salida, retorno.valorString);
     }
-    
+
     @Test
-    public void testComprasDeCliente(){
+    public void testComprasDeCliente() {
         miSistema.registrarCliente("35679992", "Ramiro Perez");
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarEvento("CUC11", "Prueba", 1, LocalDate.of(2025, 5, 10));
@@ -523,16 +524,21 @@ public class IObligatorioTest {
         salida = "TEC43-D#CUC11-N#COP10-D";
         assertEquals(salida, retorno.valorString);
     }
+
     @Test
-    public void cantidadXDia(){
+    public void cantidadXDia() {
+        miSistema.registrarCliente("35679992", "Ramiro Perez");
+
         miSistema.registrarSala("Sala 1", 50);
         miSistema.registrarSala("Sala 2", 50);
-        miSistema.registrarEvento("KAK34", "Prueba", 1, LocalDate.of(2025, 5, 1));
+        miSistema.registrarEvento("KAK34", "Prueba", 1, LocalDate.of(2025, 6, 10));
         miSistema.registrarEvento("TEC45", "Prueba", 2, LocalDate.of(2025, 5, 5));
-        miSistema.registrarEvento("CUC11", "Prueba", 1, LocalDate.of(2025, 5, 1));
+        miSistema.registrarEvento("CUC11", "Prueba", 1, LocalDate.of(2025, 3, 1));
         miSistema.registrarEvento("TEC43", "Prueba", 2, LocalDate.of(2025, 5, 13));
-        miSistema.registrarEvento("COP10", "Prueba", 2, LocalDate.of(2025, 5, 28));
-        Retorno retorno = miSistema.comprasXDia(5);
+        miSistema.registrarEvento("COP10", "Prueba", 2, LocalDate.of(2025, 8, 28));
+        miSistema.comprarEntrada("35679992", "KAK34");
+        Retorno retorno = miSistema.comprasXDia(6);
+
         //System.out.println(retorno.valorString);
     }
 

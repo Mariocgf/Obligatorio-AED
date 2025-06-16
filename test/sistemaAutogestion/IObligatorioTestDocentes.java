@@ -97,6 +97,7 @@ public class IObligatorioTestDocentes {
         sistema.registrarSala("Sala C", 100);
         Retorno ret = sistema.listarSalas();
         assertEquals(Retorno.Resultado.OK, ret.resultado);
+        System.out.println(ret.valorString);
         assertEquals("Sala C-100#Sala B-70#Sala A-50", ret.valorString);
     }
 
