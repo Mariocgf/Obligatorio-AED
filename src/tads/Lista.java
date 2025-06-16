@@ -206,4 +206,14 @@ public class Lista<T extends Comparable> implements ILista<T> {
         }
         insertarEnPos(pos, x);
     }
+    
+    public Lista<T> crearCopia(){
+        Lista<T> lista = new Lista();
+        Nodo<T> aux = initial;
+        while(aux != null){
+            lista.agregarFinal(aux.getValue());
+            aux = aux.getSig();
+        }
+        return lista;
+    }
 }

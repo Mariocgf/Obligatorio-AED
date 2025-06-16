@@ -68,8 +68,8 @@ public class prueba {
         System.out.println(r.valorString);
         System.out.println("");
         //1.5
-        sistem.registrarCliente("44444444", "Cliente 1");
-        sistem.registrarCliente("44444444", "Cliente 1");
+        sistem.registrarCliente("35679992", "Ramiro Perez");
+        sistem.registrarCliente("45678992", "Micaela Ferrez");
         sistem.registrarCliente("33333333", "Cliente 2");
         sistem.registrarCliente("11111111", "Cliente 3");
         sistem.registrarCliente("22222222", "Cliente 4");
@@ -80,9 +80,38 @@ public class prueba {
         //2.4
         System.out.println("2.4 - Sala optima: " + sistem.esSalaOptima(matriz).valorString);
         System.out.println("2.4 - Sala optima: " + sistem.esSalaOptima(matriz2).valorString);
-        
+
         System.out.println("--- Parte segundo obligatorio ---");
-        sistem.comprarEntrada("44444444", "EC1");
+        //1.6
+        System.out.println("1.6 - Comprar entrada");
+        sistem.comprarEntrada("35679992", "EC1");
+        sistem.comprarEntrada("45678992", "EC1");
+        //1.7
+        System.out.println("1.7 - Eliminar evento:");
+        System.out.println("Eliminar evento con entrada: " + sistem.eliminarEvento("EC1").valorString);
+        System.out.println("Eliminar evento sin entrada: " + sistem.eliminarEvento("EE2").resultado);
+        System.out.println("Eliminar evento ni existente: " + sistem.eliminarEvento("EE22").valorString);
+        //1.8
+        System.out.println("1.8 - Devolver entrada");
+        System.out.println("Devolver entrada a cliente inexistente: " + sistem.devolverEntrada("12345678", "EE1").valorString);
+        System.out.println("Devolver entrada a evento inexistente: " + sistem.devolverEntrada("44444444", "EE1").valorString);
+        System.out.println("Devolver entrada todo los campos correcto: " + sistem.devolverEntrada("44444444", "EC1").resultado);
+        
+        //1.9
+        System.out.println("1.9 - Calificar evento");
+        System.out.println("Calificar evento error 1: " + sistem.calificarEvento("12345678", "EE1", 5, "Primer comentario").valorString);
+        System.out.println("Calificar evento error 2: " + sistem.calificarEvento("44444444", "EE1", 5, "Primer comentario").valorString);
+        System.out.println("Calificar evento error 3, puntaje menor a 1: " + sistem.calificarEvento("44444444", "EC1", 0, "Primer comentario").resultado);
+        System.out.println("Calificar evento error 3, puntaje mayor a 10: " + sistem.calificarEvento("44444444", "EC1", 11, "Primer comentario").valorString);
+        System.out.println("Calificar evento con todo correcto: " + sistem.calificarEvento("44444444", "EC1", 9, "Primer comentario").resultado);
+        System.out.println("Calificar evento error 4: " + sistem.calificarEvento("44444444", "EC1", 10, "Primer comentario").resultado);
+        
+        //2.5
+        System.out.println("2.5 - Listar clientes de evento");
+        System.out.println("Evento EC1 - cantidad mayor al contenido de la lista");
+        System.out.println(sistem.listarClientesDeEvento("EC1", 3).valorString);
+        System.out.println("Evento EC1 - cantidad menor(1) al contenido de la lista");
+        System.out.println(sistem.listarClientesDeEvento("EC1", 1).valorString);
         
         System.out.println("2.9 - Compras de cliente");
         System.out.println(sistem.comprasDeCliente("44444444").valorString);

@@ -21,6 +21,8 @@ public class Evento implements Comparable<Evento> {
         this.fecha = fecha;
         this.sala = sala;
         this.listaEntradas = new Lista();
+        this.listaEspera = new Lista();
+        this.listaClasificacion = new Lista();
     }
     public Evento(String codigo){
         this.codigo = codigo;
@@ -71,7 +73,7 @@ public class Evento implements Comparable<Evento> {
 
     @Override
     public String toString() {
-        return codigo + "-" + descripcion + "-" + sala.getId() + "-" + (sala.getCapacidad() - this.listaEntradas.cantidadElementos()) + "-" + this.listaEntradas.cantidadElementos();
+        return codigo + "-" + descripcion + "-" + sala.getNombre() + "-" + (aforoNecesario - this.listaEntradas.cantidadElementos()) + "-" + this.listaEntradas.cantidadElementos();
     }
     
     @Override

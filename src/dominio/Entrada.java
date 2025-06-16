@@ -1,16 +1,19 @@
 package dominio;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Entrada implements Comparable<Entrada> {
     private Cliente cliente;
     private Evento evento;
     private String estado;
+    private LocalDate fecha;
 
     public Entrada(Cliente cliente, Evento evento) {
         this.cliente = cliente;
         this.evento = evento;
         this.estado = "N";
+        this.fecha = LocalDate.now();
     }
 
     public Cliente getCliente() {
@@ -27,6 +30,10 @@ public class Entrada implements Comparable<Entrada> {
 
     public void setEvento(Evento evento) {
         this.evento = evento;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public String getEstado() {

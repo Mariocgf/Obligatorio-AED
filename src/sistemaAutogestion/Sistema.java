@@ -13,12 +13,14 @@ public class Sistema implements IObligatorio {
     private Lista<Sala> listaSala;
     private Lista<Evento> listaEvento;
     private Lista<Cliente> listaCliente;
+    private Lista<Entrada> listaEntrada;
 
     @Override
     public Retorno crearSistemaDeGestion() {
         this.listaSala = new Lista();
         this.listaEvento = new Lista();
         this.listaCliente = new Lista();
+        this.listaEntrada = new Lista();
         return Retorno.ok();
     }
 
@@ -67,6 +69,9 @@ public class Sistema implements IObligatorio {
                         libre = false;
                     }
                 }
+                if (aforoNecesario > listaSala.obtenerElemento(i).getCapacidad()) {
+                    libre = false;
+                }
                 if (libre) {
                     salaLibre = listaSala.obtenerElemento(i);
                 }
@@ -86,11 +91,17 @@ public class Sistema implements IObligatorio {
         if (cedula.length() != 8) {
             return Retorno.error1();
         }
+        for (int i = 0; i < 8; i++) {
+            if ((int) cedula.charAt(i) < 48 || (int) cedula.charAt(i) > 57) {
+                return Retorno.error1();
+            }
+        }
         Cliente cliente = new Cliente(cedula, nombre);
         if (listaCliente.obtenerPos(cliente) == -1) {
             listaCliente.agregarOrdenado(cliente);
             return Retorno.ok();
         }
+
         return Retorno.error2();
     }
 
@@ -106,10 +117,11 @@ public class Sistema implements IObligatorio {
             Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
 
-            if (evento.getSala().getCapacidad() > evento.getListaEntradas().cantidadElementos()) {
+            if (evento.getAforoNecesario() > evento.getListaEntradas().cantidadElementos()) {
                 Entrada entrada = new Entrada(cliente, evento);
                 evento.getListaEntradas().agregarFinal(entrada);
                 cliente.getListaEntrada().agregarFinal(entrada);
+                listaEntrada.agregarFinal(entrada);
             } else {
                 evento.getListaEspera().agregarFinal(cliente);
             }
@@ -130,7 +142,9 @@ public class Sistema implements IObligatorio {
             if (evento.getListaEntradas().cantidadElementos() > 0) {
                 retorno = Retorno.error2("El evento tiene entradas vendidas");
             } else {
+                int eventoEnSalaPos = evento.getSala().getListaEventos().obtenerPos(evento);
                 listaEvento.eliminarEnPos(eventoPos);
+                evento.getSala().getListaEventos().eliminarEnPos(eventoEnSalaPos);
             }
         }
         return retorno;
@@ -146,8 +160,10 @@ public class Sistema implements IObligatorio {
         } else {
             Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
-
-            evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(new Entrada(cliente, evento)));
+            Boolean encontrado = false;
+            Entrada entrada = cliente.getListaEntrada().obtenerElemento(cliente.getListaEntrada().obtenerPos(new Entrada(cliente, evento)));
+            entrada.setEstado("D");
+            evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(entrada));
             if (evento.getListaEspera().cantidadElementos() > 0) {
                 Cliente clienteEspera = evento.getListaEspera().obtenerElemento(0);
                 evento.getListaEntradas().agregarFinal(new Entrada(clienteEspera, evento));
@@ -164,7 +180,7 @@ public class Sistema implements IObligatorio {
             retorno = Retorno.error1("Cliente no existe");
         } else if (!listaEvento.existeElemento(new Evento(codigoEvento))) {
             retorno = Retorno.error2("Evento no existe");
-        } else if (puntaje > 10 || puntaje < 0) {
+        } else if (puntaje > 10 || puntaje < 1) {
             retorno = Retorno.error3("Puntaje < 1 o puntaje > 10");
         } else {
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
@@ -268,42 +284,65 @@ public class Sistema implements IObligatorio {
                 cant = n;
             }
             for (int i = 0; i < cant; i++) {
+                Cliente cliente = evento.getListaEntradas().obtenerElemento(i).getCliente();
                 if (i != (cant - 1)) {
-                    salida += evento.getListaEntradas().obtenerElemento(i) + "#";
+                    salida += cliente.getCedula() + '-' + cliente.getNombre() + "#";
                 } else {
-                    salida += evento.getListaEntradas().obtenerElemento(i);
+                    salida += cliente.getCedula() + '-' + cliente.getNombre();
                 }
             }
         }
+        retorno.valorString = salida;
         return retorno;
     }
 
-    //Reparar el orden de cliente - ESTO NO ORDENA LOS CLIENTES
     @Override
     public Retorno listarEsperaEvento() {
         String salida = "";
-        Lista lista = new Lista();
+        Lista<Cliente> lista = new Lista();
         for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
             Evento evento = listaEvento.obtenerElemento(i);
             if (evento.getListaEspera().cantidadElementos() > 0) {
-                if (i != (listaEvento.cantidadElementos() - 1)) {
-                    salida += evento.getCodigo() + "-" + evento.getListaEspera().obtenerElemento(i).getCedula() + "#";
-                } else {
-                    salida += evento.getCodigo() + "-" + evento.getListaEspera().obtenerElemento(i).getCedula();
+                for (int j = 0; j < evento.getListaEspera().cantidadElementos(); j++) {
+                    lista.agregarOrdenado(new Cliente(evento.getListaEspera().obtenerElemento(j).getCedula()));
+                }
+                for (int j = 0; j < lista.cantidadElementos(); j++) {
+                    if (i != (listaEvento.cantidadElementos() - 1)) {
+                        salida += evento.getCodigo() + "-" + lista.obtenerElemento(j).getCedula() + "#";
+                    } else {
+                        salida += evento.getCodigo() + "-" + lista.obtenerElemento(j).getCedula();
+                    }
                 }
             }
+            lista.vaciar();
         }
         return Retorno.ok(salida);
     }
 
     @Override
     public Retorno deshacerUtimasCompras(int n) {
+        Retorno retorno = Retorno.ok();
+        String salida = "";
+        Lista<Integer> pos = new Lista();
+        int cont = 0;
+        for (int i = listaEntrada.cantidadElementos() - 1; i <= 0 && cont != n; i++) {
+            cont++;
+            Evento evento = listaEntrada.obtenerElemento(i).getEvento();
+            Cliente cliente = listaEntrada.obtenerElemento(i).getCliente();
+            if (cont < n) {
+                salida += evento.getCodigo() + '-' + cliente.getCedula() + '#';
+            } else {
+                salida += evento.getCodigo() + '-' + cliente.getCedula();
+            }
+            devolverEntrada(cliente.getCedula(), evento.getCodigo());
+            listaEntrada.eliminarEnPos(i);
+        }
         return Retorno.noImplementada();
     }
 
     @Override
     public Retorno eventoMejorPuntuado() {
-        Lista lista = new Lista();
+        String salida = "";
         int max = 1;
         for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
             Evento evento = listaEvento.obtenerElemento(i);
@@ -312,31 +351,31 @@ public class Sistema implements IObligatorio {
             for (int j = 0; j < cant; j++) {
                 suma += evento.getListaClasificacion().obtenerElemento(j).getPuntaje();
             }
-            if ((suma / cant) > max) {
-                lista.vaciar();
-                lista.agregarFinal(evento.getCodigo() + "-" + max);
-                max = suma/cant;
-            } else if ((suma / cant) == max) {
-                lista.agregarFinal(evento.getCodigo() + "-" + max);
+            if (cant != 0) {
+                if ((suma / cant) > max) {
+                    max = suma / cant;
+                    salida = evento.getCodigo() + "-" + max;
+                } else if ((suma / cant) == max) {
+                    salida += '#' + evento.getCodigo() + "-" + max;
+                }
             }
         }
-        return Retorno.ok();
+        return Retorno.ok(salida);
     }
 
     @Override
     public Retorno comprasDeCliente(String cedula) {
         Retorno retorno = Retorno.ok();
         String salida = "";
-        if(!listaCliente.existeElemento(new Cliente(cedula))){
+        if (!listaCliente.existeElemento(new Cliente(cedula))) {
             retorno = Retorno.error1("Cliente no existe");
-        }else{
+        } else {
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
             for (int i = 0; i < cliente.getListaEntrada().cantidadElementos(); i++) {
-                System.out.println("Entre");
                 String codEvento = cliente.getListaEntrada().obtenerElemento(i).getEvento().getCodigo();
                 String estadoEntrada = cliente.getListaEntrada().obtenerElemento(i).getEstado();
                 if (i != (listaEvento.cantidadElementos() - 1)) {
-                    salida +=  codEvento+ "-" + estadoEntrada + "#";
+                    salida += codEvento + "-" + estadoEntrada + "#";
                 } else {
                     salida += codEvento + "-" + estadoEntrada;
                 }
@@ -350,15 +389,34 @@ public class Sistema implements IObligatorio {
     public Retorno comprasXDia(int mes) {
         Retorno retorno = Retorno.ok();
         String salida = "";
-        if (mes > 12 || mes < 1){
+        int cont = 0;
+        if (mes > 12 || mes < 1) {
             retorno = Retorno.error1("Mes < 1 o mes > 12");
-        }else{
-            
+        } else {
+            for (int i = 1; i <= 31; i++) {
+                int cant = 0;
+                for (int j = 0; j < listaEvento.cantidadElementos(); j++) {
+                    int mesE = listaEvento.obtenerElemento(j).getFecha().getMonthValue();
+                    int dia = listaEvento.obtenerElemento(j).getFecha().getDayOfMonth();
+                    if (dia == i && mesE == mes) {
+                        cant++;
+                    }
+                }
+                if (cant > 0) {
+                    cont++;
+                    if (cont < listaEvento.cantidadElementos() - 1) {
+                        salida += i + "-" + cant + "#";
+                    } else {
+                        System.out.println("entre");
+                        salida += i + "-" + cant;
+                    }
+                }
+            }
         }
+        retorno.valorString = salida;
         return retorno;
     }
 
-    
     public Lista<Sala> getListaSala() {
         return listaSala;
     }
