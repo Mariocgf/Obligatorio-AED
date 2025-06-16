@@ -161,14 +161,17 @@ public class Sistema implements IObligatorio {
         } else {
             Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
-            Boolean encontrado = false;
             Entrada entrada = cliente.getListaEntrada().obtenerElemento(cliente.getListaEntrada().obtenerPos(new Entrada(cliente, evento)));
-            entrada.setEstado("D");
-            evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(entrada));
-            if (evento.getListaEspera().cantidadElementos() > 0) {
-                Cliente clienteEspera = evento.getListaEspera().obtenerElemento(0);
-                evento.getListaEntradas().agregarFinal(new Entrada(clienteEspera, evento));
-                evento.getListaEspera().eliminarInicio();
+            if (entrada == null) {
+                retorno = Retorno.error1("Cliente no existe");
+            } else {
+                entrada.setEstado("D");
+                evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(entrada));
+                if (evento.getListaEspera().cantidadElementos() > 0) {
+                    Cliente clienteEspera = evento.getListaEspera().obtenerElemento(0);
+                    evento.getListaEntradas().agregarFinal(new Entrada(clienteEspera, evento));
+                    evento.getListaEspera().eliminarInicio();
+                }
             }
         }
         return retorno;
@@ -186,11 +189,17 @@ public class Sistema implements IObligatorio {
         } else {
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
             Evento evento = listaEvento.obtenerElemento(listaEvento.obtenerPos(new Evento(codigoEvento)));
-            Clasificacion clasificaion = new Clasificacion(cliente, evento, puntaje, comentario);
-            if (evento.getListaClasificacion().existeElemento(clasificaion)) {
-                retorno = Retorno.error4("El evento ya fue clasificado por el cliente");
+            Entrada entrada = new Entrada(cliente, evento);
+            if (evento.getListaEntradas().existeElemento(entrada)) {
+                Clasificacion clasificaion = new Clasificacion(cliente, evento, puntaje, comentario);
+                if (evento.getListaClasificacion().existeElemento(clasificaion)) {
+                    retorno = Retorno.error4("El evento ya fue clasificado por el cliente");
+                } else {
+                    evento.getListaClasificacion().agregarFinal(clasificaion);
+                }
             } else {
-                evento.getListaClasificacion().agregarFinal(clasificaion);
+                retorno = Retorno.error1("Cliente no existe");
+                System.out.println("Este cliente no compro la entrada");
             }
         }
         return retorno;
@@ -356,40 +365,20 @@ public class Sistema implements IObligatorio {
     public Retorno comprasXDia(int mes) {
         Retorno retorno = Retorno.ok();
         String salida = "";
-        Lista<ReporteCompra> lista = new Lista(); 
+        Lista<ReporteCompra> lista = new Lista();
         int cont = 0;
         if (mes > 12 || mes < 1) {
             retorno = Retorno.error1("Mes < 1 o mes > 12");
         } else {
             for (int i = 0; i < listaEntrada.cantidadElementos(); i++) {
                 Entrada entrada = listaEntrada.obtenerElemento(i);
-                if(entrada.getFecha().getMonthValue() == mes){
-                    ReporteCompra rCompra = new ReporteCompra(entrada.getFecha().getDayOfMonth(),1);
-                    if(lista.existeElemento(rCompra)){
+                if (entrada.getFecha().getMonthValue() == mes) {
+                    ReporteCompra rCompra = new ReporteCompra(entrada.getFecha().getDayOfMonth(), 1);
+                    if (lista.existeElemento(rCompra)) {
                         ReporteCompra aux = lista.obtenerElemento(lista.obtenerPos(rCompra));
-                        aux.setCant(aux.getCant()+1);
-                    }else{
-                        lista.agregarOrdenado(rCompra);
-                    }
-                }
-            }
-            
-            
-            for (int i = 1; i <= 31; i++) {
-                int cant = 0;
-                for (int j = 0; j < listaEvento.cantidadElementos(); j++) {
-                    int mesE = listaEvento.obtenerElemento(j).getFecha().getMonthValue();
-                    int dia = listaEvento.obtenerElemento(j).getFecha().getDayOfMonth();
-                    if (dia == i && mesE == mes) {
-                        cant++;
-                    }
-                }
-                if (cant > 0) {
-                    cont++;
-                    if (cont < listaEvento.cantidadElementos() - 1) {
-                        salida += i + "-" + cant + "#";
+                        aux.setCant(aux.getCant() + 1);
                     } else {
-                        salida += i + "-" + cant;
+                        lista.agregarOrdenado(rCompra);
                     }
                 }
             }

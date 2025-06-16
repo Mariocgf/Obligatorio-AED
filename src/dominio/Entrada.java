@@ -16,7 +16,9 @@ public class Entrada implements Comparable<Entrada> {
         this.estado = "N";
         this.fecha = LocalDate.now();
     }
-
+    public Entrada(Cliente cliente) {
+        this.cliente = cliente;
+    }
     public Cliente getCliente() {
         return cliente;
     }
@@ -39,6 +41,10 @@ public class Entrada implements Comparable<Entrada> {
 
     public String getEstado() {
         return estado;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public LocalDate getFecha() {
