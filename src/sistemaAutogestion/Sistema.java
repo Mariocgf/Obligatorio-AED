@@ -165,11 +165,11 @@ public class Sistema implements IObligatorio {
             if (entrada == null) {
                 retorno = Retorno.error1("Cliente no existe");
             } else {
-                entrada.setEstado("D");
+                entrada.setEstado('D');
                 evento.getListaEntradas().eliminarEnPos(evento.getListaEntradas().obtenerPos(entrada));
                 if (evento.getListaEspera().cantidadElementos() > 0) {
                     Cliente clienteEspera = evento.getListaEspera().obtenerElemento(0);
-                    evento.getListaEntradas().agregarFinal(new Entrada(clienteEspera, evento));
+                    comprarEntrada(clienteEspera.getCedula(), codigoEvento);
                     evento.getListaEspera().eliminarInicio();
                 }
             }
@@ -199,7 +199,6 @@ public class Sistema implements IObligatorio {
                 }
             } else {
                 retorno = Retorno.error1("Cliente no existe");
-                System.out.println("Este cliente no compro la entrada");
             }
         }
         return retorno;
@@ -271,14 +270,12 @@ public class Sistema implements IObligatorio {
             }
             for (int i = 0; i < cant; i++) {
                 Cliente cliente = evento.getListaEntradas().obtenerElemento(i).getCliente();
-                if (i != (cant - 1)) {
                     salida += cliente.getCedula() + '-' + cliente.getNombre() + "#";
-                } else {
-                    salida += cliente.getCedula() + '-' + cliente.getNombre();
-                }
             }
         }
-        retorno.valorString = salida;
+        if (salida.length() > 0) {
+            retorno.valorString = salida.substring(0, salida.length() - 1);
+        }
         return retorno;
     }
 
@@ -349,15 +346,13 @@ public class Sistema implements IObligatorio {
             Cliente cliente = listaCliente.obtenerElemento(listaCliente.obtenerPos(new Cliente(cedula)));
             for (int i = 0; i < cliente.getListaEntrada().cantidadElementos(); i++) {
                 String codEvento = cliente.getListaEntrada().obtenerElemento(i).getEvento().getCodigo();
-                String estadoEntrada = cliente.getListaEntrada().obtenerElemento(i).getEstado();
-                if (i != (listaEvento.cantidadElementos() - 1)) {
+                char estadoEntrada = cliente.getListaEntrada().obtenerElemento(i).getEstado();
                     salida += codEvento + "-" + estadoEntrada + "#";
-                } else {
-                    salida += codEvento + "-" + estadoEntrada;
-                }
             }
         }
-        retorno.valorString = salida;
+        if (salida.length() > 0) {
+            retorno.valorString = salida.substring(0, salida.length() - 1);
+        }
         return retorno;
     }
 
@@ -370,10 +365,10 @@ public class Sistema implements IObligatorio {
         if (mes > 12 || mes < 1) {
             retorno = Retorno.error1("Mes < 1 o mes > 12");
         } else {
-            for (int i = 0; i < listaEntrada.cantidadElementos(); i++) {
-                Entrada entrada = listaEntrada.obtenerElemento(i);
-                if (entrada.getFecha().getMonthValue() == mes) {
-                    ReporteCompra rCompra = new ReporteCompra(entrada.getFecha().getDayOfMonth(), 1);
+            for (int i = 0; i < listaEvento.cantidadElementos(); i++) {
+                Evento evento = listaEvento.obtenerElemento(i);
+                if (evento.getFecha().getMonthValue() == mes) {
+                    ReporteCompra rCompra = new ReporteCompra(evento.getFecha().getDayOfMonth(), 1);
                     if (lista.existeElemento(rCompra)) {
                         ReporteCompra aux = lista.obtenerElemento(lista.obtenerPos(rCompra));
                         aux.setCant(aux.getCant() + 1);

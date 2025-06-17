@@ -7,13 +7,13 @@ public class Entrada implements Comparable<Entrada> {
 
     private Cliente cliente;
     private Evento evento;
-    private String estado;
+    private char estado;
     private LocalDate fecha;
 
     public Entrada(Cliente cliente, Evento evento) {
         this.cliente = cliente;
         this.evento = evento;
-        this.estado = "N";
+        this.estado = 'N';
         this.fecha = LocalDate.now();
     }
     public Entrada(Cliente cliente) {
@@ -35,11 +35,11 @@ public class Entrada implements Comparable<Entrada> {
         this.evento = evento;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(char estado) {
         this.estado = estado;
     }
 
-    public String getEstado() {
+    public char getEstado() {
         return estado;
     }
 

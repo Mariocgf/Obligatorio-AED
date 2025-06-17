@@ -6,10 +6,6 @@ package dominio;
 
 import java.util.Objects;
 
-/**
- *
- * @author mario
- */
 public class Clasificacion implements Comparable<Clasificacion> {
     private Cliente cliente;
     private Evento evento;

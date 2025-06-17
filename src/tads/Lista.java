@@ -196,11 +196,12 @@ public class Lista<T extends Comparable> implements ILista<T> {
             }
         }
     }
+
     @Override
-    public void agregarOrdenado(T x){
+    public void agregarOrdenado(T x) {
         Nodo<T> aux2 = initial;
         int pos = 0;
-        while(aux2 != null && ((Comparable<T>) x).compareTo(aux2.getValue()) > 0){
+        while (aux2 != null && ((Comparable<T>) x).compareTo(aux2.getValue()) > 0) {
             pos++;
             aux2 = aux2.getSig();
         }
@@ -213,16 +214,14 @@ public class Lista<T extends Comparable> implements ILista<T> {
         if (initial != null) {
             Nodo aux = initial;
             while (aux != null) {
-                if (aux.getSig() != null) {
-                    salida += aux.getValue().toString() + "#";
-                } else {
-                    salida += aux.getValue().toString();
-                }
+                salida += aux.getValue().toString() + "#";
                 aux = aux.getSig();
             }
         }
+        if (salida.length() > 0) {
+            salida = salida.substring(0, salida.length() - 1);
+        }
         return salida;
     }
-    
-    
+
 }
